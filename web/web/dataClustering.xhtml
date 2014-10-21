@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <ui:composition template="templates/layoutTemplate.xhtml">
+
+        <ui:define name="titlePage">
+            Análisis de Datos - BIENVENIDO
+        </ui:define>
+        <ui:define name="title">
+            Análisis de Datos - BIENVENIDO
+        </ui:define>    
+        <ui:define name="head">  
+            <script type="text/javascript">                
+                function clickOne() {
+                    document.getElementById('form:IdBtnHide').click();
+                }
+                function clickTwo() {
+                    document.getElementById('form:IdBtnCsv').click();
+                }                
+            </script> 
+        </ui:define>
+        <ui:define name="content"> 
+            <br/>
+
+            <h:form id="form" style="text-align:center; margin-left: auto; margin-right: auto; width: 760px">
+                #{dataViewClusteringMB.reset()}
+                <p:growl id="message"  showDetail="true" sticky="true" />
+                <p:panelGrid  style="margin-bottom:10px">
+                    <p:row>
+                        <p:column colspan="4" >
+                            <p:outputLabel for="fact" value="Eventos: " />
+                            <p:selectOneMenu id="fact" value="#{dataViewClusteringMB.fact}">
+                                <f:selectItem itemLabel="Seleccione una " itemValue="" />
+                                <f:selectItems value="#{dataViewClusteringMB.facts}" />
+                                <f:ajax 
+                                    event="change"
+                                    listener="#{dataViewClusteringMB.loadVariablesPickList}"
+                                    render="variablesList"
+                                    />
+                            </p:selectOneMenu>                            
+                        </p:column>
+                    </p:row>
+                    <p:row>                       
+                        <p:column colspan="4">
+                            <p:pickList id="variablesList" value="#{dataViewClusteringMB.variables}" 
+                                        var="item" 
+                                        itemLabel="#{item.valueSp}" 
+                                        itemValue="#{item.valueEn}"
+                                        />
+                        </p:column>
+                    </p:row>
+                    <p:row >                                            
+                        <p:column  colspan="1">Filtrar Fecha</p:column>
+                        <p:column colspan="3">
+
+                            <p:outputLabel for="start" value="Inicio:" />
+                            <br />
+                            <p:calendar id="start" value="#{dataViewClusteringMB.startDate}" pattern="dd-MM-yyyy"  />
+                            <br/>
+                            <br/>
+                            <p:outputLabel for="end" value="Fin:" />
+                            <br/>
+                            <p:calendar id="end" value="#{dataViewClusteringMB.endDate}" pattern="dd-MM-yyyy"  /> 
+                        </p:column>                                            
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3">
+                            <p:commandButton actionListener="#{dataViewClusteringMB.loadDataTable}" value="Ver Datos" style="margin-left: auto" update="table1 btnClusteringAnalysis btnQualityData" oncomplete="clickOne();"/> 
+                            <p:commandButton update="table1" value="a" style="display: none;" id="IdBtnHide"/>
+                        </p:column>
+                    </p:row> 
+                    <p:row>
+                        <p:column colspan="4">
+                            <h2>Datos Adicionales para Agrupación</h2>
+                        </p:column>                        
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="4">
+                            <p:outputLabel for="valueN" value="Valor de N:" />
+                            <br />
+                            <p:spinner value="#{dataViewClusteringMB.valueN}" id="valueN" min="1" max="10" stepFactor="1"/>                                                         
+                        </p:column>                                            
+                    </p:row>
+                </p:panelGrid>
+
+
+                <br/>
+
+                <div style="width: 760px; overflow-y: hidden; overflow-x:  scroll; margin-left: -100px">
+                    <p:dataTable 
+                        id="table1" 
+                        value="#{dataViewClusteringMB.data}"                        
+                        var="row"                                
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                        paginator="true" rows="8" style="margin-bottom:20px">
+                        <p:ajax event="filter" listener="#{dataViewClusteringMB.filter}" />
+                        <c:forEach var="i" begin="0" end="#{dataViewClusteringMB.colNameData.size()-1}">
+                            <p:column headerText="#{dataViewClusteringMB.colNameData.get(i)}" filterBy="#{row[i]}"  filterMatchMode="contains"  >
+                                <h:outputLabel value="#{row[i]}"/>
+                            </p:column>
+                        </c:forEach>
+                    </p:dataTable>
+                </div>
+
+
+                <p:column colspan="2">
+                    <h:commandButton id="btnQualityData" value="Calidad de Datos" disabled="#{dataViewClusteringMB.btnQualityData}" >
+                        <p:fileDownload value="#{dataViewClusteringMB.qualityData()}"/> 
+                    </h:commandButton> 
+                </p:column>
+                <p:column colspan="2">
+                    <h:commandButton id="btnClusteringAnalysis" value="Análisis Agrupación"  disabled="#{dataViewClusteringMB.btnClusteringAnalysis}">
+                        <p:fileDownload value="#{dataViewClusteringMB.clusteringAnalysis()}"/> 
+                    </h:commandButton> 
+                </p:column>
+            </h:form> 
+        </ui:define>
+    </ui:composition>
+</html>
+
