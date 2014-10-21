@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config version="2.1"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd">
+<navigation-rule>
+        <from-view-id>*</from-view-id>
+         <navigation-case>
+            <from-outcome>homePage</from-outcome>
+            <to-view-id>/web/dataAssociation.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>association</from-outcome>
+            <to-view-id>/web/dataAssociation.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>classification</from-outcome>
+            <to-view-id>/web/dataClassification.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>clustering</from-outcome>
+            <to-view-id>/web/dataClustering.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+</navigation-rule>
+
+</faces-config>
