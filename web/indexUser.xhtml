@@ -25,6 +25,7 @@
                  top: 50%;
                  margin-top: -190px;">
                 <p:growl id="message"  showDetail="true" sticky="true" />
+
                 <p:commandButton
                     id="IdBtnSeeDialog"
                     oncomplete="#{loginMB.closeSessionDialog}"
@@ -45,12 +46,11 @@
                     </p:row>                      
                     <p:row>
                         <p:column colspan="2" style="text-align: center;" >
-
                             <p:commandButton 
                                 value="INGRESAR" 												
                                 action="#{loginMB.CheckValidUser}" 
                                 update="message password" />
-
+                                    
                         </p:column>
                     </p:row>  
                 </p:panelGrid>
