@@ -37,6 +37,10 @@ public class LoginMB {
     ApplicationControlMB applicationControlMB;
     StringEncryption stringEncryption = new StringEncryption();
     private boolean autenticado = false;
+    private String activeIndexAcoordion1 = "-1";
+    private String activeIndexAcoordion2 = "-1";
+    private boolean permissionRegistryDataSection = true;
+    private boolean permissionAdministrator = false;
 
     public LoginMB() {
     }
@@ -93,6 +97,7 @@ public class LoginMB {
         idSession = session.getId();
 
         applicationControlMB.addSession(userId, idSession);
+        permissionAdministrator = true;
 
         return inicializeVariables();
     }
@@ -111,7 +116,8 @@ public class LoginMB {
          * terminales distintas, 
          */
 
-        return null;
+        applicationControlMB.removeSession(userId);
+        return continueLogin();
     }
 
     public String getCloseSessionDialog() {
@@ -177,6 +183,45 @@ public class LoginMB {
     public void setAutenticado(boolean autenticado) {
         this.autenticado = autenticado;
     }
+
+    public String getActiveIndexAcoordion1() {
+        return activeIndexAcoordion1;
+    }
+
+    public void setActiveIndexAcoordion1(String activeIndexAcoordion1) {
+        this.activeIndexAcoordion1 = activeIndexAcoordion1;
+    }
+
+    public String getActiveIndexAcoordion2() {
+        return activeIndexAcoordion2;
+    }
+
+    public void setActiveIndexAcoordion2(String activeIndexAcoordion2) {
+        this.activeIndexAcoordion2 = activeIndexAcoordion2;
+    }
+
+    public boolean isPermissionRegistryDataSection() {
+        return permissionRegistryDataSection;
+    }
+
+    public void setPermissionRegistryDataSection(boolean permissionRegistryDataSection) {
+        this.permissionRegistryDataSection = permissionRegistryDataSection;
+    }
+
+    public boolean isPermissionAdministrator() {
+        return permissionAdministrator;
+    }
+
+    public void setPermissionAdministrator(boolean permissionAdministrator) {
+        this.permissionAdministrator = permissionAdministrator;
+    }
+    
+    
+    
+    
+    
+    
+    
     
     
 }

@@ -8,131 +8,106 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <ui:composition template="templates/layoutTemplate.xhtml">
-
         <ui:define name="titlePage">
             Análisis de Datos - BIENVENIDO
         </ui:define>
         <ui:define name="title">
             Análisis de Datos - BIENVENIDO
-        </ui:define>    
-        <ui:define name="head">  
-            <script type="text/javascript">                
-                function clickOne() {
-                    document.getElementById('form:IdBtnHide').click();
-                }
-                function clickTwo() {
-                    document.getElementById('form:IdBtnCsv').click();
-                }                
-            </script> 
-        </ui:define>
+        </ui:define>   
+
         <ui:define name="content"> 
             <br/>
-
-            <h:form id="form" style="text-align:center; margin-left: auto; margin-right: auto; width: 760px">
-                #{dataViewAssociationMB.reset()}
-                <!--p:messages autoUpdate="true" showDetail="true" showSummary="true" /-->
-                <p:growl id="message"  showDetail="true" sticky="true" />
-                <p:panelGrid  style="margin-bottom:10px">
-                    <p:row>
-                        <p:column colspan="4" >
-                            <p:outputLabel for="fact" value="Eventos: " />
-                            <p:selectOneMenu id="fact" value="#{dataViewAssociationMB.fact}">
-                                <f:selectItem itemLabel="Seleccione una " itemValue="" />
-                                <f:selectItems value="#{dataViewAssociationMB.facts}" />
-                                <f:ajax 
-                                    event="change"
-                                    listener="#{dataViewAssociationMB.loadVariablesPickList}"
-                                    render="variablesList"
-                                    />
-                            </p:selectOneMenu>                            
-                        </p:column>
-                    </p:row>
-                    <p:row>                       
-                        <p:column colspan="4">
-                            <p:pickList id="variablesList" value="#{dataViewAssociationMB.variables}" 
-                                        var="item" 
-                                        itemLabel="#{item.valueSp}" 
-                                        itemValue="#{item.valueEn}"
-                                        />
-                        </p:column>
-                    </p:row>
-                    <p:row >                                            
-                        <p:column  colspan="1">Filtrar Fecha</p:column>
-                        <p:column colspan="3">
-
-                            <p:outputLabel for="start" value="Inicio:" />
-                            <br />
-                            <p:calendar id="start" value="#{dataViewAssociationMB.startDate}" pattern="dd-MM-yyyy"  />
-                            <br/>
-                            <br/>
-                            <p:outputLabel for="end" value="Fin:" />
-                            <br/>
-                            <p:calendar id="end" value="#{dataViewAssociationMB.endDate}" pattern="dd-MM-yyyy"  /> 
-                        </p:column>                                            
-                    </p:row>
-                    <p:row>
-                        <p:column colspan="3">
-                            <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" style="margin-left: auto" update="table1 btnQualityData btnAssociationAnalysis" oncomplete="clickOne();"/> 
-                            <p:commandButton update="table1" value="a" style="display: none;" id="IdBtnHide"/>
-                        </p:column>
-                    </p:row> 
-                    <p:row>
-                        <p:column colspan="4">
-                            <h2>Datos Adicionales para Asociación</h2>
-                        </p:column>                        
-                    </p:row>
-
-                    <p:row>
-                        <p:column colspan="1">
-                            <p:outputLabel for="kValue" value="Valor K:" />
-                            <br />
-                            <p:spinner value="#{dataViewAssociationMB.kValue}" id="kValue" min="1" max="100" stepFactor="1"/>                                                         
-                        </p:column>
-                        <p:column colspan="1">
-                            <p:outputLabel for="lcmSuppPerc" value="Soporte LCM" />
-                            <br />
-                            <p:spinner value="#{dataViewAssociationMB.lcmSuppPerc}" id="lcmSuppPerc" min="0.0" max="1.0" stepFactor="0.01"/>                            
-                        </p:column>
-                        <p:column colspan="1">
-                            <p:outputLabel for="lcmMinLen" value="Valor Minimo LCM" />
-                            <br />
-                            <p:spinner value="#{dataViewAssociationMB.lcmMinLen}" id="lcmMinLen" min="1" max="20" stepFactor="1" />                            
-                        </p:column>                        
-                    </p:row>
-                </p:panelGrid>
-
-
+            <h:form enctype="multipart/form-data" id="IdForm" rendered="#{loginMB.permissionAdministrator}">                 
+                <p:growl id="message"  showDetail="true" sticky="true" autoUpdate="true" life="1000"  />
                 <br/>
+                <p:tabView id="IdTabView"  style=" width: 750px;  margin-left: -375px; left: 50%;" > 
+                    <!--===================================================================================-->
+                    <!--========================SECCION PARA LA CARGA DEL ARCHIVO==========================-->
+                    <p:tab id="tab1" title="Asociación">  
+                        <p:fieldset  legend="Cargar Archivo">
+                            <p:panelGrid style="margin-top:20px">
+                                <p:row>
+                                    <p:column colspan="2">
+                                        <h:outputLabel value="Archivo: "/>
+                                    </p:column>
+                                    <p:column colspan="3">
+                                        <h:outputLabel id="IdNewNameFile" value="#{dataViewAssociationMB.newFileName}"/>                                        
+                                    </p:column>
+                                </p:row>
+                                <br/>
+                                <br/>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:fileUpload                                         
+                                            id="IdBtnFileSelect"                                        
+                                            fileUploadListener="#{dataViewAssociationMB.handleFileUpload}"                                          
+                                            mode="advanced"                                           
+                                            cancelLabel="Cancelar"
+                                            uploadLabel="Subir"                                        
+                                            label="Archivo"
+                                            sizeLimit="50000000"
+                                            invalidFileMessage="Solo se aceptan archivos csv y txt"
+                                            invalidSizeMessage="El tamaño del archivo debe ser inferior a 50MB"
+                                            update=":IdForm:message IdNewNameFile"
+                                            allowTypes="/(\.|\/)(csv|txt)$/">                                        
+                                        </p:fileUpload>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:outputLabel for="sep" value="Sep:" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu id="sep" value="#{dataViewAssociationMB.sep}">
+                                            <f:selectItem itemLabel=";" itemValue=";" />
+                                            <f:selectItem itemLabel="," itemValue="," />
+                                            <f:selectItem itemLabel="|" itemValue="|" />
+                                            <f:selectItem itemLabel="TAB" itemValue="\t" />
+                                        </p:selectOneMenu>
+                                    </p:column>
 
-                <div style="width: 760px; overflow-y: hidden; overflow-x:  scroll; margin-left: -100px">
-                    <p:dataTable 
-                        id="table1" 
-                        value="#{dataViewAssociationMB.data}"                        
-                        var="row"                                
-                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                        paginator="true" rows="8" style="margin-bottom:20px">
-                        <p:ajax event="filter" listener="#{dataViewAssociationMB.filter}" />
-                        <c:forEach var="i" begin="0" end="#{dataViewAssociationMB.colNameData.size()-1}">
-                            <p:column headerText="#{dataViewAssociationMB.colNameData.get(i)}" filterBy="#{row[i]}"  filterMatchMode="contains"  >
-                                <h:outputLabel value="#{row[i]}"/>
-                            </p:column>
-                        </c:forEach>
-                    </p:dataTable>
-                </div>
+                                    <p:column >
+                                        <p:outputLabel for="header" value="header:" />                                        
+                                    </p:column>
+                                    <p:column>                                        
+                                        <p:selectOneMenu id="header" value="#{dataViewAssociationMB.header}">
+                                            <f:selectItem itemLabel="Si" itemValue="true" />
+                                            <f:selectItem itemLabel="No" itemValue="false" />                                            
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column >
+                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1"/>                               
+                                    </p:column>                                
+                                </p:row>
+                            </p:panelGrid>
+                        </p:fieldset> 
+                        <p:fieldset legend="Datos">
+                            <p:dataTable 
+                                id="table1" 
+                                value="#{dataViewAssociationMB.data}"                        
+                                var="row"                                
+                                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                paginator="true" rows="8" style="margin-bottom:20px">
+                                <p:ajax event="filter" listener="#{dataViewAssociationMB.filter}" />
+                                <c:forEach var="i" begin="0" end="#{dataViewAssociationMB.colNameData.size()-1}">
+                                    <p:column headerText="#{dataViewAssociationMB.colNameData.get(i)}" filterBy="#{row[i]}"  filterMatchMode="contains"  >
+                                        <h:outputLabel value="#{row[i]}"/>
+                                    </p:column>
+                                </c:forEach>
+                            </p:dataTable>
+                        </p:fieldset>
+                        <p:fieldset legend="Análisis de Asociación">
+                            
+                        </p:fieldset>
+                        <p:fieldset legend="Calidad de Datos">
+                            
+                        </p:fieldset>
+                    </p:tab>  
+                </p:tabView>  
+            </h:form>
 
+        </ui:define> 
 
-                <p:column colspan="2">
-                    <h:commandButton id="btnQualityData" value="Calidad de Datos" disabled="#{dataViewAssociationMB.btnQualityData}">
-                        <p:fileDownload value="#{dataViewAssociationMB.qualityData()}"/> 
-                    </h:commandButton> 
-                </p:column>
-                <p:column colspan="2">
-                    <h:commandButton id="btnAssociationAnalysis" value="Análisis Asociación" disabled="#{dataViewAssociationMB.btnAssociationAnalysis}" >
-                        <p:fileDownload value="#{dataViewAssociationMB.associationAnalysis()}"/> 
-                    </h:commandButton> 
-                </p:column>
-            </h:form> 
-        </ui:define>
     </ui:composition>
 </html>
 
