@@ -45,9 +45,9 @@
                                             cancelLabel="Cancelar"
                                             uploadLabel="Subir"                                        
                                             label="Archivo"
-                                            sizeLimit="50000000"
+                                            sizeLimit="100000000"
                                             invalidFileMessage="Solo se aceptan archivos csv y txt"
-                                            invalidSizeMessage="El tamaño del archivo debe ser inferior a 50MB"
+                                            invalidSizeMessage="El tamaño del archivo debe ser inferior a 100MB"
                                             update=":IdForm:message IdNewNameFile"
                                             allowTypes="/(\.|\/)(csv|txt)$/">                                        
                                         </p:fileUpload>
@@ -76,7 +76,7 @@
                                         </p:selectOneMenu>
                                     </p:column>
                                     <p:column >
-                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1"/>                               
+                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1 classData"/>                               
                                     </p:column>                                
                                 </p:row>
                             </p:panelGrid>
@@ -85,22 +85,30 @@
                             <p:dataTable 
                                 id="table1" 
                                 value="#{dataViewAssociationMB.data}"                        
-                                var="row"                                
+                                var="row"
+                                scrollable="true" scrollWidth="710"                             
                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                                paginator="true" rows="8" style="margin-bottom:20px">
+                                paginator="true" rows="10" style="margin-bottom:20px">
                                 <p:ajax event="filter" listener="#{dataViewAssociationMB.filter}" />
                                 <c:forEach var="i" begin="0" end="#{dataViewAssociationMB.colNameData.size()-1}">
-                                    <p:column headerText="#{dataViewAssociationMB.colNameData.get(i)}" filterBy="#{row[i]}"  filterMatchMode="contains"  >
+                                    <p:column headerText="#{dataViewAssociationMB.colNameData.get(i)}" filterBy="#{row[i]}" filterMatchMode="contains">
                                         <h:outputLabel value="#{row[i]}"/>
                                     </p:column>
                                 </c:forEach>
                             </p:dataTable>
                         </p:fieldset>
                         <p:fieldset legend="Análisis de Asociación">
-                            
+                            <p:selectOneMenu id="classData" value="#{dataViewAssociationMB.classData}">
+                                <f:selectItem itemLabel="Seleccione una " itemValue="" />
+                                <f:selectItems value="#{dataViewAssociationMB.colNameData}" />
+                                <p:ajax event="change" update="classValue" listener="#{dataViewAssociationMB.loadClassValues}"></p:ajax>
+                            </p:selectOneMenu> 
+                            <p:selectOneMenu id="classValue" value="#{dataViewAssociationMB.classValue}">
+                                <f:selectItem itemLabel="Seleccione un valor " itemValue="" />
+                                <f:selectItems value="#{dataViewAssociationMB.classValues}" />
+                            </p:selectOneMenu>
                         </p:fieldset>
-                        <p:fieldset legend="Calidad de Datos">
-                            
+                        <p:fieldset legend="Calidad de Datos">                            
                         </p:fieldset>
                     </p:tab>  
                 </p:tabView>  

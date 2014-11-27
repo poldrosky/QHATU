@@ -9,7 +9,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -17,6 +19,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.data.FilterEvent;
@@ -33,6 +36,10 @@ public class DataViewAssociationMB {
     private List<String> colNameData = new ArrayList<>();
     private String sep;
     private boolean header;
+    private String classData;
+    private List<String> classesData;
+    private String classValue;
+    private List<String> classValues;
     
     @PostConstruct
     public void init() {
@@ -84,7 +91,7 @@ public class DataViewAssociationMB {
 
             if (header == true) {
                 String nameHeader = buffer.readLine();
-                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.split(sep)));
+                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"","").split(sep)));
             }
             else{
                 String nameHeader = buffer.readLine();
@@ -97,15 +104,34 @@ public class DataViewAssociationMB {
             }
             
             while ((line = buffer.readLine()) != null) {
-                tupla = line.split(sep);
+                tupla = line.replace("\"","").split(sep);
                 data.add(tupla);
                 System.out.println(tupla);
             }
         } catch (IOException ex) {
             Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
+               
+    }
+    
+    public void loadClassValues(){
+        int p=0;
+        System.out.println("1"+classData);
+        for(int i=0; i<= colNameData.size()-1; i++){
+            if(colNameData.get(i).equals(classData)){
+                p=i;
+                break;
+            }
+        }
+        
+        Set<String> diff = new HashSet<String>();
+           for(int i=0; i<= data.size()-1; i++){
+               diff.add(data.get(i)[p]);
+           } 
+          classValues = new ArrayList(diff);
+          
+          
+               
     }
 
     public void filter(FilterEvent event) {
@@ -160,4 +186,37 @@ public class DataViewAssociationMB {
     public void setHeader(boolean header) {
         this.header = header;
     }
+
+    public String getClassData() {
+        return classData;
+    }
+
+    public void setClassData(String classData) {
+        this.classData = classData;
+    }
+
+    public List<String> getClassesData() {
+        return classesData;
+    }
+
+    public void setClassesData(List<String> classesData) {
+        this.classesData = classesData;
+    }
+
+    public String getClassValue() {
+        return classValue;
+    }
+
+    public void setClassValue(String classValue) {
+        this.classValue = classValue;
+    }
+
+    public List<String> getClassValues() {
+        return classValues;
+    }
+
+    public void setClassValues(List<String> classValues) {
+        this.classValues = classValues;
+    }  
+    
 }
