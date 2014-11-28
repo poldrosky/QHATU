@@ -1,5 +1,6 @@
 package managedBeans.data;
 
+import beans.util.ItemList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +24,7 @@ import javax.faces.model.SelectItem;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.data.FilterEvent;
+import org.primefaces.model.DualListModel;
 import org.primefaces.model.UploadedFile;
 
 @ManagedBean(name = "dataViewAssociationMB")
@@ -40,10 +42,16 @@ public class DataViewAssociationMB {
     private List<String> classesData;
     private String classValue;
     private List<String> classValues;
+    private DualListModel<String> variables ;
+    private List<String> variablesSource;
+    private List<String> variablesTarget;
     
     @PostConstruct
     public void init() {
         header = true;
+        variablesSource = new ArrayList<>();
+        variablesTarget = new ArrayList<>();
+        variables = new DualListModel<>(variablesSource, variablesTarget);
     }
 
     private void copyFile(String fileName, InputStream in) {
@@ -71,6 +79,18 @@ public class DataViewAssociationMB {
             Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
         }
         newFileName = file.getFileName();
+    }
+    
+    public void loadVariablesPickList() {
+        variablesSource = new ArrayList<>();
+        variablesTarget = new ArrayList<>();
+        variables = new DualListModel<>(variablesSource, variablesTarget);
+        variablesSource.add(new String("variable1"));
+        variablesSource.add(new String("variable2"));
+        
+        
+        variables = new DualListModel<>(variablesSource, variablesTarget);
+    
     }
 
     public void loadDataTable() {
@@ -218,5 +238,31 @@ public class DataViewAssociationMB {
     public void setClassValues(List<String> classValues) {
         this.classValues = classValues;
     }  
+
+    public DualListModel<String> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(DualListModel<String> variables) {
+        this.variables = variables;
+    }
+
+    public List<String> getVariablesSource() {
+        return variablesSource;
+    }
+
+    public void setVariablesSource(List<String> variablesSource) {
+        this.variablesSource = variablesSource;
+    }
+
+    public List<String> getVariablesTarget() {
+        return variablesTarget;
+    }
+
+    public void setVariablesTarget(List<String> variablesTarget) {
+        this.variablesTarget = variablesTarget;
+    }
+    
+    
     
 }

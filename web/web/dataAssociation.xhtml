@@ -76,26 +76,40 @@
                                         </p:selectOneMenu>
                                     </p:column>
                                     <p:column >
-                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1 classData"/>                               
+                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadVariablesPickList}" value="Ver variables" update="variablesList"/>                               
                                     </p:column>                                
                                 </p:row>
                             </p:panelGrid>
                         </p:fieldset> 
+                        <p:fieldset legend="Escoger Variables">
+                            <p:column colspan="4">
+                                <p:pickList id="variablesList" value="#{dataViewAssociationMB.variables}" 
+                                            var="item" 
+                                            itemLabel="#{item.valueVariables}" 
+                                            itemValue="#{item.valueVariables}"
+                                            />
+                            </p:column>
+                            <p:column >
+                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1 classData"/>                               
+                                    </p:column> 
+                        </p:fieldset>
                         <p:fieldset legend="Datos">
-                            <p:dataTable 
-                                id="table1" 
-                                value="#{dataViewAssociationMB.data}"                        
-                                var="row"
-                                scrollable="true" scrollWidth="710"                             
-                                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                                paginator="true" rows="10" style="margin-bottom:20px">
-                                <p:ajax event="filter" listener="#{dataViewAssociationMB.filter}" />
-                                <c:forEach var="i" begin="0" end="#{dataViewAssociationMB.colNameData.size()-1}">
-                                    <p:column headerText="#{dataViewAssociationMB.colNameData.get(i)}" filterBy="#{row[i]}" filterMatchMode="contains">
-                                        <h:outputLabel value="#{row[i]}"/>
-                                    </p:column>
-                                </c:forEach>
-                            </p:dataTable>
+                            <div style="width: 710px; overflow-y: hidden; overflow-x:  scroll;">
+                                <p:dataTable 
+                                    id="table1" 
+                                    value="#{dataViewAssociationMB.data}"                        
+                                    var="row"
+                                    scrollable="true" scrollWidth="710"                             
+                                    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                    paginator="true" rows="10" style="margin-bottom:20px">
+                                    <p:ajax event="filter" listener="#{dataViewAssociationMB.filter}" />
+                                    <c:forEach var="i" begin="0" end="#{dataViewAssociationMB.colNameData.size()-1}">
+                                        <p:column headerText="#{dataViewAssociationMB.colNameData.get(i)}" filterBy="#{row[i]}" filterMatchMode="contains">
+                                            <h:outputLabel value="#{row[i]}"/>
+                                        </p:column>
+                                    </c:forEach>
+                                </p:dataTable>
+                            </div>
                         </p:fieldset>
                         <p:fieldset legend="Análisis de Asociación">
                             <p:selectOneMenu id="classData" value="#{dataViewAssociationMB.classData}">
