@@ -42,16 +42,16 @@ public class DataViewAssociationMB {
     private List<String> classesData;
     private String classValue;
     private List<String> classValues;
-    private DualListModel<String> variables ;
+    private DualListModel<String> variables;
     private List<String> variablesSource;
     private List<String> variablesTarget;
-    
+
     @PostConstruct
     public void init() {
         header = true;
-        variablesSource = new ArrayList<>();
-        variablesTarget = new ArrayList<>();
-        variables = new DualListModel<>(variablesSource, variablesTarget);
+        variablesSource = new ArrayList<String>();
+        variablesTarget = new ArrayList<String>();
+        variables = new DualListModel<String>(variablesSource, variablesTarget);
     }
 
     private void copyFile(String fileName, InputStream in) {
@@ -80,17 +80,35 @@ public class DataViewAssociationMB {
         }
         newFileName = file.getFileName();
     }
-    
+
     public void loadVariablesPickList() {
-        variablesSource = new ArrayList<>();
-        variablesTarget = new ArrayList<>();
-        variables = new DualListModel<>(variablesSource, variablesTarget);
-        variablesSource.add(new String("variable1"));
-        variablesSource.add(new String("variable2"));
-        
-        
-        variables = new DualListModel<>(variablesSource, variablesTarget);
-    
+        variablesSource = new ArrayList<String>();
+        variablesTarget = new ArrayList<String>();
+        variables = new DualListModel<String>(variablesSource, variablesTarget);
+
+        try {
+            InputStreamReader isr;
+            BufferedReader buffer;
+            String[] tupla;
+            isr = new InputStreamReader(file.getInputstream());
+            buffer = new BufferedReader(isr);
+            if (header == true) {
+                String nameHeader = buffer.readLine();
+                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"", "").split(sep)));
+            } else {
+                String nameHeader = buffer.readLine();
+                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.split(sep)));
+                for (int i = 0; i < colNameData.size(); i++) {
+                    colNameData.set(i, "Columna_" + i);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        variablesSource.addAll(colNameData);
+        variables = new DualListModel<String>(variablesSource, variablesTarget);
+
     }
 
     public void loadDataTable() {
@@ -111,47 +129,46 @@ public class DataViewAssociationMB {
 
             if (header == true) {
                 String nameHeader = buffer.readLine();
-                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"","").split(sep)));
-            }
-            else{
+                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"", "").split(sep)));
+            } else {
                 String nameHeader = buffer.readLine();
                 tupla = nameHeader.split(sep);
                 data.add(tupla);
                 colNameData = new ArrayList<String>(Arrays.asList(nameHeader.split(sep)));
-                for (int i = 0; i < 10; i++) {
-                    colNameData.set(i, "Columna_"+i);
+                for (int i = 0; i < colNameData.size(); i++) {
+                    colNameData.set(i, "Columna_" + i);
                 }
             }
-            
+
             while ((line = buffer.readLine()) != null) {
-                tupla = line.replace("\"","").split(sep);
+                tupla = line.replace("\"", "").split(sep);
                 data.add(tupla);
                 System.out.println(tupla);
             }
         } catch (IOException ex) {
             Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
         }
-               
+
     }
-    
-    public void loadClassValues(){
-        int p=0;
-        System.out.println("1"+classData);
-        for(int i=0; i<= colNameData.size()-1; i++){
-            if(colNameData.get(i).equals(classData)){
-                p=i;
+
+    public void loadClassValues() {
+        int p = 0;
+        System.out.println("1" + classData);
+        for (int i = 0; i <= colNameData.size() - 1; i++) {
+            if (colNameData.get(i).equals(classData)) {
+                p = i;
                 break;
             }
         }
-        
+
         Set<String> diff = new HashSet<String>();
-           for(int i=0; i<= data.size()-1; i++){
-               diff.add(data.get(i)[p]);
-           } 
-          classValues = new ArrayList(diff);
-          
-          
-               
+        for (int i = 0; i <= data.size() - 1; i++) {
+            diff.add(data.get(i)[p]);
+        }
+        classValues = new ArrayList(diff);
+
+
+
     }
 
     public void filter(FilterEvent event) {
@@ -237,7 +254,7 @@ public class DataViewAssociationMB {
 
     public void setClassValues(List<String> classValues) {
         this.classValues = classValues;
-    }  
+    }
 
     public DualListModel<String> getVariables() {
         return variables;
@@ -262,7 +279,4 @@ public class DataViewAssociationMB {
     public void setVariablesTarget(List<String> variablesTarget) {
         this.variablesTarget = variablesTarget;
     }
-    
-    
-    
 }
