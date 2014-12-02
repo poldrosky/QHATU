@@ -65,7 +65,6 @@
                                             <f:selectItem itemLabel="TAB" itemValue="\t" />
                                         </p:selectOneMenu>
                                     </p:column>
-
                                     <p:column >
                                         <p:outputLabel for="header" value="header:" />                                        
                                     </p:column>
@@ -82,24 +81,27 @@
                             </p:panelGrid>
                         </p:fieldset> 
                         <p:fieldset legend="Escoger Variables">
-                            <p:column colspan="4">
-                                <p:pickList id="variablesList" value="#{dataViewAssociationMB.variables}" 
-                                            var="variables" 
-                                            itemLabel="#{variables}" 
-                                            itemValue="#{variables}"
-                                            />
-                            </p:column>
-                            <p:column >
+                            <p:panelGrid style="margin-top:20px">
+                                <p:row>
+                                    <p:column colspan="3">
+                                        <p:pickList id="variablesList" value="#{dataViewAssociationMB.variables}" 
+                                                    var="variables" 
+                                                    itemLabel="#{variables}" 
+                                                    itemValue="#{variables}"
+                                                    />
+                                    </p:column>
+                                    <p:column colspan="2" >
                                         <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1 classData"/>                               
-                                    </p:column> 
-                        </p:fieldset>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+                        </p:fieldset>                        
                         <p:fieldset legend="Datos">
-                            <div style="width: 710px; overflow-y: hidden; overflow-x:  scroll;">
+                            <div style="width: 710px; margin-top:20px; overflow-y: hidden; overflow-x:  scroll;">
                                 <p:dataTable 
                                     id="table1" 
                                     value="#{dataViewAssociationMB.data}"                        
-                                    var="row"
-                                    scrollable="true" scrollWidth="710"                             
+                                    var="row"                                                        
                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                                     paginator="true" rows="10" style="margin-bottom:20px">
                                     <p:ajax event="filter" listener="#{dataViewAssociationMB.filter}" />

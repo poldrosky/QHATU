@@ -36,6 +36,7 @@ public class DataViewAssociationMB {
     private ArrayList<String[]> data;
     private List<String[]> resultado;
     private List<String> colNameData = new ArrayList<>();
+    private List<String> columnsName = new ArrayList<>();
     private String sep;
     private boolean header;
     private String classData;
@@ -89,29 +90,60 @@ public class DataViewAssociationMB {
         try {
             InputStreamReader isr;
             BufferedReader buffer;
-            String[] tupla;
             isr = new InputStreamReader(file.getInputstream());
             buffer = new BufferedReader(isr);
             if (header == true) {
                 String nameHeader = buffer.readLine();
-                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"", "").split(sep)));
+                columnsName = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"", "").split(sep)));
             } else {
                 String nameHeader = buffer.readLine();
-                colNameData = new ArrayList<String>(Arrays.asList(nameHeader.split(sep)));
-                for (int i = 0; i < colNameData.size(); i++) {
-                    colNameData.set(i, "Columna_" + i);
+                columnsName = new ArrayList<String>(Arrays.asList(nameHeader.split(sep)));
+                for (int i = 0; i < columnsName.size(); i++) {
+                    columnsName.set(i, "Columna_" + i);
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        variablesSource.addAll(colNameData);
+        variablesSource.addAll(columnsName);
         variables = new DualListModel<String>(variablesSource, variablesTarget);
-
+    }
+    
+    public void loadDataTable(){
+        colNameData = new ArrayList<String>();
+        colNameData.addAll(variables.getTarget());
+        data = new ArrayList<>(); 
+        
+        try {
+            String line;
+            InputStreamReader isr;
+            BufferedReader buffer;
+            String[] tupla;
+            isr = new InputStreamReader(file.getInputstream());
+            buffer = new BufferedReader(isr);
+            
+            if (header == true) {
+                buffer.readLine();
+            }
+            while ((line = buffer.readLine()) != null) {
+                tupla = line.replace("\"", "").split(sep);
+                data.add(tupla);
+                System.out.println(tupla);                
+            }
+            
+            
+         } catch (IOException ex) {
+            Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
-    public void loadDataTable() {
+    public void loadDataTable1() {
+        for(String varTarget:variables.getTarget()){
+            System.out.println(varTarget);
+        };
+        
         colNameData = new ArrayList<String>();
         data = new ArrayList<>();
 
@@ -124,9 +156,7 @@ public class DataViewAssociationMB {
             isr = new InputStreamReader(file.getInputstream());
 
             buffer = new BufferedReader(isr);
-            //Leer el la informacion del archivo linea por linea                       
-            ArrayList<String> rowFileData;
-
+            
             if (header == true) {
                 String nameHeader = buffer.readLine();
                 colNameData = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"", "").split(sep)));
@@ -166,9 +196,6 @@ public class DataViewAssociationMB {
             diff.add(data.get(i)[p]);
         }
         classValues = new ArrayList(diff);
-
-
-
     }
 
     public void filter(FilterEvent event) {
@@ -279,4 +306,14 @@ public class DataViewAssociationMB {
     public void setVariablesTarget(List<String> variablesTarget) {
         this.variablesTarget = variablesTarget;
     }
+
+    public List<String> getColumnsName() {
+        return columnsName;
+    }
+
+    public void setColumnsName(List<String> columnsName) {
+        this.columnsName = columnsName;
+    }
+    
+    
 }
