@@ -4,35 +4,44 @@
  */
 package beans.util;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Omar Ernesto Cabrera Rosero
  */
-public class ItemList {
+public class ItemList implements Serializable{
 
-    private String valueSp = "";
-    private String valueEn = "";
+    private String valueHeader;
+    private Integer posHeader;
 
-    public ItemList(String valueSp, String valueEn) {
-        this.valueEn = valueEn;
-        this.valueSp = valueSp;
+    public ItemList(){
+        
+    }
+    public ItemList(String valueHeader, Integer posHeader) {
+        this.posHeader = posHeader;
+        this.valueHeader = valueHeader;
     }
 
-    public String getValueSp() {
-        return valueSp;
+    public String getValueHeader() {
+        return valueHeader;
     }
 
-    public void setValueSp(String valueSp) {
-        this.valueSp = valueSp;
+    public void setValueHeader(String valueHeader) {
+        this.valueHeader = valueHeader;
     }
 
-    public String getValueEn() {
-        return valueEn;
+    public Integer getPosHeader() {
+        return posHeader;
     }
 
-    public void setValueEn(String valueEn) {
-        this.valueEn = valueEn;
+    public void setPosHeader(Integer posHeader) {
+        this.posHeader = posHeader;
     }
     
+    @Override
+    public String toString(){
+        return valueHeader;
+    }
     
 }

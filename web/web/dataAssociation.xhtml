@@ -13,8 +13,17 @@
         </ui:define>
         <ui:define name="title">
             Análisis de Datos - BIENVENIDO
-        </ui:define>   
-
+        </ui:define>
+        <ui:define name="head">  
+            <script type="text/javascript">                
+                function clickOne() {
+                    document.getElementById('form:IdBtnHide').click();
+                }
+                function clickTwo() {
+                    document.getElementById('form:IdBtnCsv').click();
+                }                
+            </script> 
+        </ui:define>
         <ui:define name="content"> 
             <br/>
             <h:form enctype="multipart/form-data" id="IdForm" rendered="#{loginMB.permissionAdministrator}">                 
@@ -86,12 +95,14 @@
                                     <p:column colspan="3">
                                         <p:pickList id="variablesList" value="#{dataViewAssociationMB.variables}" 
                                                     var="variables" 
-                                                    itemLabel="#{variables}" 
+                                                    itemLabel="#{variables.valueHeader}" 
                                                     itemValue="#{variables}"
+                                                    converter="itemListConverter"
                                                     />
                                     </p:column>
                                     <p:column colspan="2" >
-                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1 classData"/>                               
+                                        <p:commandButton actionListener="#{dataViewAssociationMB.loadDataTable}" value="Ver Datos" update="table1 classData" oncomplete="clickOne();"/>                               
+                                        <p:commandButton update="table1" value="a" style="display: none;" id="IdBtnHide"/>
                                     </p:column>
                                 </p:row>
                             </p:panelGrid>
