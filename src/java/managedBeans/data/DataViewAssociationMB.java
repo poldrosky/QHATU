@@ -1,5 +1,6 @@
 package managedBeans.data;
 
+import beans.analysis.DataAnalysis;
 import beans.util.ItemList;
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,10 +23,12 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import managedBeans.login.LoginMB;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.data.FilterEvent;
 import org.primefaces.model.DualListModel;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
 @ManagedBean(name = "dataViewAssociationMB")
@@ -46,6 +50,14 @@ public class DataViewAssociationMB {
     private DualListModel<ItemList> variables;
     private List<ItemList> variablesSource;
     private List<ItemList> variablesTarget;
+    private DataAnalysis analysis;
+    private LoginMB loginMB;
+    private boolean btnQualityData = true;
+
+    public DataViewAssociationMB() {
+        loginMB = (LoginMB) FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(FacesContext.getCurrentInstance(), "#{loginMB}", LoginMB.class);
+        analysis = new DataAnalysis();
+    }
 
     @PostConstruct
     public void init() {
@@ -86,7 +98,7 @@ public class DataViewAssociationMB {
         variablesSource = new ArrayList<ItemList>();
         variablesTarget = new ArrayList<ItemList>();
         variables = new DualListModel<ItemList>(variablesSource, variablesTarget);
-  
+
 
         try {
             InputStreamReader isr;
@@ -96,16 +108,16 @@ public class DataViewAssociationMB {
             if (header == true) {
                 String nameHeader = buffer.readLine();
                 columnsName = new ArrayList<String>(Arrays.asList(nameHeader.replace("\"", "").split(sep)));
-                for(int i=0;i<columnsName.size();i++){    
-                    variablesSource.add(new ItemList(columnsName.get(i),i));
+                for (int i = 0; i < columnsName.size(); i++) {
+                    variablesSource.add(new ItemList(columnsName.get(i), i));
                 }
-                
+
             } else {
                 String nameHeader = buffer.readLine();
                 columnsName = new ArrayList<String>(Arrays.asList(nameHeader.split(sep)));
                 for (int i = 0; i < columnsName.size(); i++) {
                     columnsName.set(i, "Columna_" + i);
-                    variablesSource.add(new ItemList(columnsName.get(i),i));
+                    variablesSource.add(new ItemList(columnsName.get(i), i));
                 }
             }
         } catch (IOException ex) {
@@ -115,15 +127,15 @@ public class DataViewAssociationMB {
         //variablesSource.addAll(columnsName);
         variables = new DualListModel<ItemList>(variablesSource, variablesTarget);
     }
-    
-    public void loadDataTable(){
+
+    public void loadDataTable() {
         colNameData = new ArrayList<String>();
-        List<ItemList>columnsList=variables.getTarget();   
-        for(ItemList item:columnsList){
+        List<ItemList> columnsList = variables.getTarget();
+        for (ItemList item : columnsList) {
             colNameData.add(item.getValueHeader());
         }
-        data = new ArrayList<>();    
-        
+        data = new ArrayList<>();
+
         try {
             String line;
             InputStreamReader isr;
@@ -131,27 +143,32 @@ public class DataViewAssociationMB {
             String[] tuple;
             isr = new InputStreamReader(file.getInputstream());
             buffer = new BufferedReader(isr);
-            
+
             if (header == true) {
                 buffer.readLine();
             }
             while ((line = buffer.readLine()) != null) {
                 tuple = line.replace("\"", "").split(sep);
-                String tuplaNueva[]=new String[columnsList.size()];
-                int i=0;
-                for(ItemList item:columnsList){
-                    tuplaNueva[i]=tuple[item.getPosHeader().intValue()];
+                String tuplaNueva[] = new String[columnsList.size()];
+                int i = 0;
+                for (ItemList item : columnsList) {
+                    tuplaNueva[i] = tuple[item.getPosHeader().intValue()];
                     i++;
                 }
                 data.add(tuplaNueva);
-                System.out.println(tuplaNueva);                
-            }            
-            
-         } catch (IOException ex) {
+                System.out.println(tuplaNueva);
+            }
+
+        } catch (IOException ex) {
             Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }   
+
+        if (!data.isEmpty()) {
+            btnQualityData = false;
+            //btnAssociationAnalysis = false;
+        }
+
+    }
 
     public void loadClassValues() {
         int p = 0;
@@ -173,6 +190,19 @@ public class DataViewAssociationMB {
     public void filter(FilterEvent event) {
         DataTable table = (DataTable) event.getSource();
         resultado = table.getFilteredData();
+    }
+
+    public StreamedContent qualityData() {
+        try {
+            if (data != null && !data.isEmpty()) {
+                return analysis.getQualityDataFile(loginMB.getUserLogin(), colNameData, resultado, data);
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR!!", "No ha cargado datos"));
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DataViewAssociationMB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     public String getNewFileName() {
@@ -286,6 +316,8 @@ public class DataViewAssociationMB {
     public void setColumnsName(List<String> columnsName) {
         this.columnsName = columnsName;
     }
-    
-    
+
+    public boolean isBtnQualityData() {
+        return btnQualityData;
+    }
 }

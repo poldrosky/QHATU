@@ -104,7 +104,6 @@ public class DataAnalysis {
         Process p;
         ProcessBuilder pb = new ProcessBuilder();
 
-
         ServletContext ctx = (ServletContext) FacesContext.getCurrentInstance()
                 .getExternalContext().getContext();
         String directory = ctx.getRealPath("/") + "Resources/R/qualityData/";
